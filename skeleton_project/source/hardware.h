@@ -7,6 +7,8 @@
 #define HARDWARE_NUMBER_OF_FLOORS 4
 #define HARDWARE_NUMBER_OF_BUTTONS 3
 
+/*Her var vi */
+
 /**
  * @brief Movement type used in @c hardware_command_movement.
  */
