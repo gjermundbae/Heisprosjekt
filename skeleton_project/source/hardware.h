@@ -8,7 +8,7 @@
 #define HARDWARE_NUMBER_OF_BUTTONS 3
 
 /*Her var vi */
-
+/* Her var Gjermund*/
 /**
  * @brief Movement type used in @c hardware_command_movement.
  */
