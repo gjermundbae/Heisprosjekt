@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "hardware.h"
-#include "state.h"
+//#include "state.h" in utilities
 #include "utilities.h"
 
 static void clear_all_order_lights(){
@@ -73,14 +73,14 @@ int main(){
                         fsm.fsm_orders[f][0]=0;
                         fsm.fsm_orders[f][2]=0;
                     }
-                    else if(scan_down(f) == 0){
+                    else if(scanDown(f, fsm) == 0){
                         hardware_command_movement(HARDWARE_MOVEMENT_STOP);
                         fsm.fsm_direction = DIRECTION_UP;
-                        if(fsm.fsm_orders[f][1])
+                        if(fsm.fsm_orders[f][1]){
                             hardware_command_door_open(1);
                             fsm.fsm_orders[f][1] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
-                            
+                        }    
                     }
                 }
                 else { //if(fsm.fsm_direction == DIRECTION_UP)
@@ -94,14 +94,14 @@ int main(){
                         fsm.fsm_orders[f][1]=0;
                         fsm.fsm_orders[f][2]=0;
                     }
-                    else if(scan_up(f) == 0){
+                    else if(scanUp(f, fsm) == 0){
                         hardware_command_movement(HARDWARE_MOVEMENT_STOP);
                         fsm.fsm_direction = DIRECTION_DOWN;
-                        if(fsm.fsm_orders[f][0])
+                        if(fsm.fsm_orders[f][0]){
                             hardware_command_door_open(1);
                             fsm.fsm_orders[f][0] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
-                            
+                        }
                     }
                     
                 }
@@ -150,8 +150,8 @@ int main(){
                 fsm.fsm_orders[i][2] = 0;
             }
         }
-        if (door_timer()==0 & order_isEmpty(fsm)== 0){
-            if(fsm.fsm_direction = DIRECTION_UP){
+        if (order_isEmpty(fsm)== 0){
+            if(fsm.fsm_direction == DIRECTION_UP){
                 hardware_command_movement(HARDWARE_MOVEMENT_UP);
             }
             else{
