@@ -1,5 +1,5 @@
 SIM := false
-SOURCES := main.c
+SOURCES := main.c utilities.c
 
 SOURCE_DIR := source
 BUILD_DIR := build
