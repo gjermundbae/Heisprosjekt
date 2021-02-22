@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "hardware.h"
+#include "state.h"
 
 static void clear_all_order_lights(){
     HardwareOrder order_types[3] = {
@@ -20,6 +21,12 @@ static void clear_all_order_lights(){
 
 
 int main(){
+    struct State fsm;
+    fsm.fsm_floor=0;
+    fsm.fsm_goal=1;
+    fsm.fsm_orders[1][0] = 1;
+    fsm.fsm_stop = 0;
+    fsm.fsm_direction = 1;
     int error = hardware_init();
     if(error != 0){
         fprintf(stderr, "Unable to initialize hardware\n");
@@ -47,9 +54,22 @@ int main(){
             hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
         }
 
-        /* All buttons must be polled, like this: */
+        /* All buttons must be polled, like this:
+            Added functionality: If current floor matches order-book -> make a stop
+         */
         for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
             if(hardware_read_floor_sensor(f)){
+                if(fsm.fsm_direction == DIRECTION_DOWN){
+                    if(fsm.fsm_orders[f][0] == 1 | fsm.fsm_orders[f][2] == 1){
+                        hardware_command_halt();
+                        hardware_command_door_open();
+                        fsm.fsm_floor = f;
+                        fsm.fsm_orders[f][0]=0;
+                        fsm.fsm_orders[f][2]=0;
+                        
+                    }
+                    
+                }
                 hardware_command_floor_indicator_on(f);
             }
         }
