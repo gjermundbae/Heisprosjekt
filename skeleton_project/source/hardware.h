@@ -17,7 +17,7 @@ typedef enum {
     HARDWARE_MOVEMENT_STOP,
     HARDWARE_MOVEMENT_DOWN
 } HardwareMovement;
-
+int h = 1;
 /**
  * @brief Order type used in @c hardware_read_order
  * and in @c hardware_command_order_light.
