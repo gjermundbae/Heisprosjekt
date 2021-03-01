@@ -171,7 +171,7 @@ int main(){
             }
 
         }
-        if((clock() - timer_startTime) >= 3000 & fsm.fsm_door==1){
+        if(((clock() - timer_startTime) >= 3000) & fsm.fsm_door==1){
             fsm.fsm_door = 0;
         }
 
