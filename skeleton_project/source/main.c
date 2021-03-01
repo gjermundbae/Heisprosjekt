@@ -5,6 +5,10 @@
 //#include "state.h" in utilities
 #include "utilities.h"
 
+clock_t timer_startTime = 0;
+clock_t waitingTime = 3;
+
+
 static void clear_all_order_lights(){
     HardwareOrder order_types[3] = {
         HARDWARE_ORDER_UP,
@@ -24,42 +28,49 @@ static void clear_all_order_lights(){
 int main(){
     struct State fsm;
     fsm.fsm_floor=0;
-    fsm.fsm_goal=1;
-    fsm.fsm_orders[1][0] = 1;
+    fsm.fsm_orders[0][2] = 1;
     fsm.fsm_stop = 0;
-    fsm.fsm_direction = 1;
+    fsm.fsm_direction = DIRECTION_DOWN;
     int error = hardware_init();
     if(error != 0){
         fprintf(stderr, "Unable to initialize hardware\n");
         exit(1);
     }
     
-    printf("=== Example Program ===\n");
-    printf("Press the stop button on the elevator panel to exit\n");
 
-    hardware_command_movement(HARDWARE_MOVEMENT_UP);
+
+    hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
 
     while(1){
-        if(hardware_read_stop_signal()){
-            hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-            break;
+
+        while(hardware_read_stop_signal()){
+                    hardware_command_movement(HARDWARE_MOVEMENT_STOP);
+                    hardware_command_stop_light(1);
+                    clear_all_order_lights();
+                    resetOrders(&fsm);
+                    fsm.fsm_stop = 1;
         }
-
-
-
-
-        
-
+        hardware_command_stop_light(0);
+        if(fsm.fsm_stop==1 & order_isEmpty(fsm)==0){
+            fsm.fsm_stop=0;
+            if(fsm.fsm_direction==DIRECTION_DOWN & scanDown(fsm.fsm_floor, fsm)==0){
+                fsm.fsm_direction = DIRECTION_UP;
+            }
+            else if(fsm.fsm_direction==DIRECTION_UP & scanUp(fsm.fsm_floor, fsm)==0){
+                fsm.fsm_direction = DIRECTION_DOWN;
+            }
+        }
 
         /* All buttons must be polled, like this:
             Added functionality: If current floor matches order-book -> make a stop
          */
         for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
             if(hardware_read_floor_sensor(f)){
+                fsm.fsm_floor = f;
                 if(f==0){
                     fsm.fsm_direction = DIRECTION_UP;
                 }
-                if(f==HARDWARE_NUMBER_OF_FLOORS){
+                if(f==HARDWARE_NUMBER_OF_FLOORS-1){
                     fsm.fsm_direction = DIRECTION_DOWN;
                 }
                 if(fsm.fsm_direction == DIRECTION_DOWN){
@@ -69,7 +80,10 @@ int main(){
                         hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
                         hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
                         hardware_command_door_open(1);
-                        fsm.fsm_floor = f;
+                        fsm.fsm_door = 1;
+                        timer_startTime = clock();
+                    
+                        
                         fsm.fsm_orders[f][0]=0;
                         fsm.fsm_orders[f][2]=0;
                     }
@@ -78,6 +92,8 @@ int main(){
                         fsm.fsm_direction = DIRECTION_UP;
                         if(fsm.fsm_orders[f][1]){
                             hardware_command_door_open(1);
+                            fsm.fsm_door = 1;
+                            timer_startTime = clock();
                             fsm.fsm_orders[f][1] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
                         }    
@@ -90,6 +106,9 @@ int main(){
                         hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
                         hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
                         hardware_command_door_open(1);
+                        fsm.fsm_door = 1;
+                        timer_startTime = clock();
+
                         fsm.fsm_floor = f;
                         fsm.fsm_orders[f][1]=0;
                         fsm.fsm_orders[f][2]=0;
@@ -99,6 +118,8 @@ int main(){
                         fsm.fsm_direction = DIRECTION_DOWN;
                         if(fsm.fsm_orders[f][0]){
                             hardware_command_door_open(1);
+                            fsm.fsm_door = 1;
+                            timer_startTime = clock();
                             fsm.fsm_orders[f][0] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
                         }
@@ -131,26 +152,17 @@ int main(){
         }
 
         /* Code to clear all lights given the obstruction signal */
-        if(hardware_read_obstruction_signal()){
+        if(hardware_read_obstruction_signal() & fsm.fsm_door==1){
             hardware_command_door_open(1);
-            //timer_start(3000);
+            fsm.fsm_door = 1;
+            timer_startTime = clock();
             
         }
-        else{
-            hardware_command_door_open(0);
-        }
+      
         
-        while(hardware_read_stop_signal()){
-            hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-            hardware_command_stop_light(1);
-            clear_all_order_lights();
-            for(int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
-                fsm.fsm_orders[i][0] = 0;
-                fsm.fsm_orders[i][1] = 0;
-                fsm.fsm_orders[i][2] = 0;
-            }
-        }
-        if (order_isEmpty(fsm)== 0){
+        
+        
+        if (order_isEmpty(fsm)== 0 & fsm.fsm_door==0){
             if(fsm.fsm_direction == DIRECTION_UP){
                 hardware_command_movement(HARDWARE_MOVEMENT_UP);
             }
@@ -158,6 +170,12 @@ int main(){
                 hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
             }
 
+        }
+        
+        
+        if((((double)(clock() - timer_startTime))/ CLOCKS_PER_SEC >= waitingTime) & fsm.fsm_door==1){
+            fsm.fsm_door = 0;
+            hardware_command_door_open(0);
         }
 
     }

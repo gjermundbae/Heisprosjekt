@@ -2,7 +2,7 @@
 
 
 int scanUp(int floor, struct State S){
-    for( int f = floor ; f < HARDWARE_NUMBER_OF_FLOORS -1 ; f++){
+    for( int f = floor ; f < HARDWARE_NUMBER_OF_FLOORS-1 ; f++){
         if (S.fsm_orders[f+1][0] == 1 | S.fsm_orders[f+1][1] == 1 | S.fsm_orders[f+1][2] == 1){
             return 1;
         }
@@ -26,4 +26,12 @@ int order_isEmpty(struct State S){
         }
     }
     return 1;
+}
+void resetOrders(struct State* S){
+    for(int f = 0 ; f < HARDWARE_NUMBER_OF_FLOORS ; f++){
+        S->fsm_orders[f][0]=0;
+        S->fsm_orders[f][1]=0;
+        S->fsm_orders[f][2]=0;
+        
+    }
 }
