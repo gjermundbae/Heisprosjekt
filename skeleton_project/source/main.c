@@ -148,9 +148,7 @@ int main(){
             //timer_start(3000);
             
         }
-        else{
-            hardware_command_door_open(0);
-        }
+      
         
         while(hardware_read_stop_signal()){
             hardware_command_movement(HARDWARE_MOVEMENT_STOP);
@@ -173,6 +171,7 @@ int main(){
         }
         if(((clock() - timer_startTime) >= 3000) & fsm.fsm_door==1){
             fsm.fsm_door = 0;
+            hardware_command_door_open(0);
         }
 
     }
