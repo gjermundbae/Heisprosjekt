@@ -1,6 +1,7 @@
 /*
 @file
 */
+#include <time.h>
 #include "hardware.h"
 #include "state.h"
 

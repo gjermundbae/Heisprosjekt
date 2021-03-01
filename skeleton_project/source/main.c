@@ -5,6 +5,8 @@
 //#include "state.h" in utilities
 #include "utilities.h"
 
+int timer_startTime = 0;
+
 static void clear_all_order_lights(){
     HardwareOrder order_types[3] = {
         HARDWARE_ORDER_UP,
@@ -69,6 +71,9 @@ int main(){
                         hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
                         hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
                         hardware_command_door_open(1);
+                        fsm.fsm_door = 1;
+                        timer_startTime = clock();
+                    
                         fsm.fsm_floor = f;
                         fsm.fsm_orders[f][0]=0;
                         fsm.fsm_orders[f][2]=0;
@@ -78,6 +83,8 @@ int main(){
                         fsm.fsm_direction = DIRECTION_UP;
                         if(fsm.fsm_orders[f][1]){
                             hardware_command_door_open(1);
+                            fsm.fsm_door = 1;
+                            timer_startTime = clock();
                             fsm.fsm_orders[f][1] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
                         }    
@@ -90,6 +97,9 @@ int main(){
                         hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
                         hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
                         hardware_command_door_open(1);
+                        fsm.fsm_door = 1;
+                        timer_startTime = clock();
+
                         fsm.fsm_floor = f;
                         fsm.fsm_orders[f][1]=0;
                         fsm.fsm_orders[f][2]=0;
@@ -99,6 +109,8 @@ int main(){
                         fsm.fsm_direction = DIRECTION_DOWN;
                         if(fsm.fsm_orders[f][0]){
                             hardware_command_door_open(1);
+                            fsm.fsm_door = 1;
+                            timer_startTime = clock();
                             fsm.fsm_orders[f][0] = 0;
                             hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
                         }
@@ -150,7 +162,7 @@ int main(){
                 fsm.fsm_orders[i][2] = 0;
             }
         }
-        if (order_isEmpty(fsm)== 0){
+        if (order_isEmpty(fsm)== 0 & fsm.fsm_door==0){
             if(fsm.fsm_direction == DIRECTION_UP){
                 hardware_command_movement(HARDWARE_MOVEMENT_UP);
             }
@@ -158,6 +170,9 @@ int main(){
                 hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
             }
 
+        }
+        if((clock() - timer_startTime) >= 3000 & fsm.fsm_door==1){
+            fsm.fsm_door = 0;
         }
 
     }
