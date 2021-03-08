@@ -6,7 +6,7 @@
 #include "utilities.h"
 
 clock_t timer_startTime = 0;
-clock_t waitingTime = 3;
+clock_t timer_waitingTime = 3;
 
 
 static void clear_all_order_lights(){
@@ -40,8 +40,6 @@ int main(){
         exit(1);
     }
     
-
-
     hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
 
     while(1){
@@ -64,111 +62,38 @@ int main(){
                 fsm.fsm_direction = DIRECTION_DOWN;
             }
         }
-                /* Lights are set and cleared like this: */
-        for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-            if(fsm.fsm_resetElevator){
-            /* Internal orders */
-                if(hardware_read_order(f, HARDWARE_ORDER_INSIDE)){
-                    hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 1);
-                    fsm.fsm_orders[f][2] = 1;
-                }
-
-            /* Orders going up */
-            
-                if(hardware_read_order(f, HARDWARE_ORDER_UP)){
-                    hardware_command_order_light(f, HARDWARE_ORDER_UP, 1);
-                    fsm.fsm_orders[f][1] = 1;
-                }
-
-                /* Orders going down */
-                if(hardware_read_order(f, HARDWARE_ORDER_DOWN)){
-                    hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 1);
-                    fsm.fsm_orders[f][0] = 1;
-                }
-            }
-        }
+        updateOrders(&fsm);
 
         /* All buttons must be polled, like this:
             Added functionality: If current floor matches order-book -> make a stop
          */
-        for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-            if(hardware_read_floor_sensor(f)){
-                fsm.fsm_floor = f;
-                if(f==0){
+        for(int currentFloor = 0; currentFloor < HARDWARE_NUMBER_OF_FLOORS; currentFloor++){
+            if(hardware_read_floor_sensor(currentFloor)){
+                // Setting the new floor
+                fsm.fsm_floor = currentFloor;
+                    //Flipping the direction if the elevator is at the end floors 
+                if(currentFloor==0){
                     fsm.fsm_direction = DIRECTION_UP;
                 }
-                if(f==HARDWARE_NUMBER_OF_FLOORS-1){
+                else if(currentFloor==HARDWARE_NUMBER_OF_FLOORS-1){
                     fsm.fsm_direction = DIRECTION_DOWN;
                 }
-                if(fsm.fsm_direction == DIRECTION_DOWN){
-                    
-                    if(fsm.fsm_orders[f][0] | fsm.fsm_orders[f][2] ){
-                        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-                        hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
-                        hardware_command_order_light(f,HARDWARE_ORDER_UP, 0);
-                        hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
-                        hardware_command_door_open(1);
-                        fsm.fsm_door = 1;
-                        timer_startTime = clock();
-                    
-                        
-                        fsm.fsm_orders[f][0]=0;
-                        fsm.fsm_orders[f][1]=0;
-                        fsm.fsm_orders[f][2]=0;
-                    }
-                    else if(!scanDown(f, fsm) & !fsm.fsm_door){
-                        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-                        fsm.fsm_direction = DIRECTION_UP;
-                        if(fsm.fsm_orders[f][1]){
-                            hardware_command_door_open(1);
-                            fsm.fsm_door = 1;
-                            timer_startTime = clock();
-                            fsm.fsm_orders[f][1] = 0;
-                            hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
-                        }    
-                    }
+                //Checking if the elevator should take a halt at the current floor
+                if(((fsm.fsm_direction== DIRECTION_DOWN &fsm.fsm_orders[currentFloor][0]) | (fsm.fsm_direction == DIRECTION_UP & fsm.fsm_orders[currentFloor][1]) | fsm.fsm_orders[currentFloor][2]) | (fsm.fsm_door & (fsm.fsm_orders[currentFloor][0] | fsm.fsm_orders[currentFloor][1]) )){
+                    arrivalRoutine(&fsm, currentFloor);
+                    timer_startTime = clock();
                 }
-                else { //if(fsm.fsm_direction == DIRECTION_UP)
-                    if(fsm.fsm_orders[f][1] | fsm.fsm_orders[f][2] ){
-                        
-                        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-                        hardware_command_order_light(f,HARDWARE_ORDER_DOWN, 0);
-                        hardware_command_order_light(f, HARDWARE_ORDER_UP, 0);
-                        hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 0);
-                        hardware_command_door_open(1);
-                        fsm.fsm_door = 1;
-                        timer_startTime = clock();
-
-                        fsm.fsm_floor = f;
-                     fsm.fsm_orders[f][1]=0;
-                        fsm.fsm_orders[f][2]=0;
-                        fsm.fsm_orders[f][0]=0;
-                    }
-                    else if(!scanUp(f, fsm) & !fsm.fsm_door ){
-                        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-                        fsm.fsm_direction = DIRECTION_DOWN;
-                        if(fsm.fsm_orders[f][0]){
-                            hardware_command_door_open(1);
-                            fsm.fsm_door = 1;
-                            timer_startTime = clock();
-                            fsm.fsm_orders[f][0] = 0;
-                            hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 0);
-                        }
-                    }
-                    
-                }
-                hardware_command_floor_indicator_on(f);
+                else{
+                    checkPeripheralOrders(&fsm, currentFloor, &timer_startTime);
+                }                
+                hardware_command_floor_indicator_on(currentFloor);
             }
         }
-
-
-
         /* Code to clear all lights given the obstruction signal */
-        if((hardware_read_stop_signal() | hardware_read_obstruction_signal()) & fsm.fsm_door){
+        if( (hardware_read_stop_signal() | hardware_read_obstruction_signal()) & fsm.fsm_door){
             hardware_command_door_open(1);
             fsm.fsm_door = 1;
             timer_startTime = clock();
-            
         }
         if (!order_isEmpty(fsm) & !fsm.fsm_door){
             if(fsm.fsm_direction == DIRECTION_UP){
@@ -177,14 +102,8 @@ int main(){
             else{
                 hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
             }
-
         }
-        
-        
-        if((((double)(clock() - timer_startTime))/ CLOCKS_PER_SEC >= waitingTime) & fsm.fsm_door){
-            fsm.fsm_door = 0;
-            hardware_command_door_open(0);
-        }
+        checkTimerAndCloseDoor(&fsm, &timer_startTime, &timer_waitingTime);
 
     }
 
