@@ -57,11 +57,11 @@ int main(){
             fsm.fsm_stop=0;
             if(fsm.fsm_direction==DIRECTION_DOWN & scanDown(fsm.fsm_floor, fsm)==0){
                 fsm.fsm_direction = DIRECTION_UP;
-                fsm.fsm_floor-= 1;
+                fsm.fsm_floor--;
             }
             else if(fsm.fsm_direction==DIRECTION_UP & scanUp(fsm.fsm_floor, fsm)==0){
                 fsm.fsm_direction = DIRECTION_DOWN;
-                fsm.fsm_floor+= 1;
+                fsm.fsm_floor++;
             }
             
         }
