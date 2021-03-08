@@ -11,5 +11,5 @@ struct State{
     int fsm_door;
     int fsm_direction;
     int fsm_orders[4][3];
-    
+    int fsm_resetElevator;
 };

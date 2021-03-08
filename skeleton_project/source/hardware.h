@@ -12,6 +12,8 @@
 /**
  * @brief Movement type used in @c hardware_command_movement.
  */
+
+
 typedef enum {
     HARDWARE_MOVEMENT_UP,
     HARDWARE_MOVEMENT_STOP,
