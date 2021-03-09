@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "utilities.h": "c",
-        "state.h": "c"
+        "state.h": "c",
+        "stdio.h": "c",
+        "cmath": "c"
     }
 }
