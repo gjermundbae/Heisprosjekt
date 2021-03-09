@@ -5,8 +5,8 @@
 int main(){
     struct State fsm;
 
-    resetOrders(&fsm);
-    initialize_State(&fsm, 3);
+    orders_reset(&fsm);
+    initialize_State (&fsm, 3);
     initialize_Hardware();
     
     while(1){
@@ -20,25 +20,25 @@ int main(){
         }
 
         //Turns off the stoplight after stopbutton is released
-        hardware_command_stop_light(0);
+        initialize_clearAllOrderLights(0);
         
-        //The first order aften a stopcase requires extra direction-logic
-        checkDirectionAfterStop(&fsm);
+        //The first order after stopbutton requires extra direction-logic
+        handler_firstOrderAfterStop(&fsm);
 
         //Checks for new orders and updates the orderbook
-        updateOrders(&fsm);
+        orders_update(&fsm);
 
         //Checks all floorsensors and decides whether the elevator should make a halt
-        checkFloorSensors(&fsm);
+        handler_floorSensors(&fsm);
 
         //Reopens the door if stopbutton or obstruction is active
-        keepDoorOpen(&fsm);
+        handler_keepDoorOpen(&fsm);
 
         //Starts the motor if the door is closed and the orderbook is not empty
-        startMotor(&fsm);
+        routine_startMotor(&fsm);
 
         //Closes the door if the timer is up
-        checkTimerAndCloseDoor(&fsm);
+        handler_closeDoor(&fsm);
 
     }
     return 0;
