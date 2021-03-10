@@ -132,7 +132,8 @@ void handler_closeDoor(struct State* currentState){
     if((((double)(clock() - currentState->timer_startTime))/ CLOCKS_PER_SEC >= currentState->timer_waitingTime) & currentState->fsm_door){
                 currentState->fsm_door = 0;
                 hardware_commandDoorOpen(0);
-        }
+        
+    }
 }
 
 void handler_firstOrderAfterStop(struct State* currentState){
