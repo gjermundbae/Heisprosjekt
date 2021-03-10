@@ -1,7 +1,9 @@
 #include "utilities.h"
 
-int orders_scanUp(struct State* currentState){
-    for( int f = currentState->fsm_floor ; f < HARDWARE_NUMBER_OF_FLOORS-1 ; f++){
+
+int orders_scanUp(int floor, struct State* currentState){
+    for( int f = floor ; f < HARDWARE_NUMBER_OF_FLOORS-1 ; f++){
+
         if (currentState->fsm_orders[f+1][0] | currentState->fsm_orders[f+1][1] | currentState->fsm_orders[f+1][2] ){
             return 1;
         }
@@ -37,28 +39,30 @@ void orders_reset(struct State* currentState){
 
 
 void orders_update(struct State* currentState){
-        for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-            if(currentState->fsm_resetElevator){
+    for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
+        if(currentState->fsm_resetElevator){
             /* Internal orders */
-                if(hardware_readOrder(f, HARDWARE_ORDER_INSIDE)){
-                    hardware_commandOrderLight(f, HARDWARE_ORDER_INSIDE, 1);
-                    currentState->fsm_orders[f][2] = 1;
-                }
+            if(hardware_read_order(f, HARDWARE_ORDER_INSIDE)){
+                hardware_command_order_light(f, HARDWARE_ORDER_INSIDE, 1);
+                currentState->fsm_orders[f][2] = 1;
+            }
             /* Orders going up */
-                if(hardware_readOrder(f, HARDWARE_ORDER_UP)){
-                    hardware_commandOrderLight(f, HARDWARE_ORDER_UP, 1);
-                    currentState->fsm_orders[f][1] = 1;
-                }
-
-                /* Orders going down */
-                if(hardware_readOrder(f, HARDWARE_ORDER_DOWN)){
-                    hardware_commandOrderLight(f, HARDWARE_ORDER_DOWN, 1);
-                    currentState->fsm_orders[f][0] = 1;
-                }
+            if(hardware_read_order(f, HARDWARE_ORDER_UP)){
+                hardware_command_order_light(f, HARDWARE_ORDER_UP, 1);
+                currentState->fsm_orders[f][1] = 1;
+            }
+            /* Orders going down */
+            if(hardware_read_order(f, HARDWARE_ORDER_DOWN)){
+                hardware_command_order_light(f, HARDWARE_ORDER_DOWN, 1);
+                currentState->fsm_orders[f][0] = 1;
             }
         }
+    }
 }
-void orders_checkPeripheralOrders(struct State* currentState){
+
+
+void orders_checkPeripherals(struct State* currentState, int floor){
+
     switch (currentState->fsm_direction){
         case DIRECTION_DOWN:
             if(!orders_scanDown(currentState) & !(currentState->fsm_door)){
@@ -70,6 +74,7 @@ void orders_checkPeripheralOrders(struct State* currentState){
         
             }
             break;
+
         case DIRECTION_UP:
             if(!orders_scanUp(currentState) & !currentState->fsm_door){
                 hardware_commandMovement(HARDWARE_MOVEMENT_STOP);
@@ -81,6 +86,7 @@ void orders_checkPeripheralOrders(struct State* currentState){
             break;
     }
 }
+
 void routine_stop(struct State* currentState){ 
     hardware_commandMovement(HARDWARE_MOVEMENT_STOP);
     hardware_commandStopLight(1);
@@ -95,20 +101,24 @@ void routine_stop(struct State* currentState){
         }
     }
 }
-void routine_arrival(struct State* currentState){
-    hardware_commandMovement(HARDWARE_MOVEMENT_STOP);
-    hardware_commandOrderLight(currentState->fsm_floor,HARDWARE_ORDER_DOWN, 0);
-    hardware_commandOrderLight(currentState->fsm_floor, HARDWARE_ORDER_UP, 0);
-    hardware_commandOrderLight(currentState->fsm_floor, HARDWARE_ORDER_INSIDE, 0);
-    hardware_commandDoorOpen(1);
+
+
+void routine_arrival(struct State* currentState, int currentFloor){
+    hardware_command_movement(HARDWARE_MOVEMENT_STOP);
+    hardware_command_order_light(currentFloor, HARDWARE_ORDER_DOWN, 0);
+    hardware_command_order_light(currentFloor, HARDWARE_ORDER_UP, 0);
+    hardware_command_order_light(currentFloor, HARDWARE_ORDER_INSIDE, 0);
+    hardware_command_door_open(1);
     currentState->fsm_door = 1;
-    currentState->fsm_floor = currentState->fsm_floor;
-    currentState->fsm_orders[currentState->fsm_floor][0]=0;
-    currentState->fsm_orders[currentState->fsm_floor][1]=0;
-    currentState->fsm_orders[currentState->fsm_floor][2]=0;
+    currentState->fsm_floor = currentFloor;
+    currentState->fsm_orders[currentFloor][0] = 0;
+    currentState->fsm_orders[currentFloor][1] = 0;
+    currentState->fsm_orders[currentFloor][2] = 0;
+
 }
+
 void routine_startMotor(struct State* currentState){
-    if (!order_isEmpty(currentState) & !currentState->fsm_door){
+    if (!order_isEmpty(currentState) & !(currentState->fsm_door)){
         if(currentState->fsm_direction == DIRECTION_UP){
             hardware_commandMovement(HARDWARE_MOVEMENT_UP);
         }
@@ -117,33 +127,35 @@ void routine_startMotor(struct State* currentState){
         }
     }
 }
+
 void handler_closeDoor(struct State* currentState){
     if((((double)(clock() - currentState->timer_startTime))/ CLOCKS_PER_SEC >= currentState->timer_waitingTime) & currentState->fsm_door){
                 currentState->fsm_door = 0;
                 hardware_commandDoorOpen(0);
         }
 }
+
 void handler_firstOrderAfterStop(struct State* currentState){
-    if(currentState->fsm_stop & !orders_isEmpty(currentState)){
-            currentState->fsm_stop=0;
-            switch (currentState->fsm_direction){
-                case (DIRECTION_DOWN):
-                    if (!orders_scanDown(currentState->fsm_floor, currentState)){
-                        currentState->fsm_direction = DIRECTION_UP;
-                        currentState->fsm_floor--;
-                    }
-                    break;
-                
-                case (DIRECTION_UP):
-                    if (!orders_scanUp(currentState->fsm_floor, currentState)){
-                        currentState->fsm_direction = DIRECTION_DOWN;
-                        currentState->fsm_floor++;
-                    }
-                    break;
-                
-            }
+
+    if(currentState->fsm_stop & !order_isEmpty(currentState)){
+        currentState->fsm_stop=0;
+        switch (currentState->fsm_direction){
+            case (DIRECTION_DOWN):
+                if (!scanDown(currentState->fsm_floor, currentState)){
+                    currentState->fsm_direction = DIRECTION_UP;
+                    currentState->fsm_floor--;
+                }
+                break;
+            
+            case (DIRECTION_UP):
+                if (!scanUp(currentState->fsm_floor, currentState)){
+                    currentState->fsm_direction = DIRECTION_DOWN;
+                    currentState->fsm_floor++;
+                }
+                break;   
 
         }
+    }
 }
 void handler_floorSensors(struct State* currentState){
     for(int currentFloor = 0; currentFloor < HARDWARE_NUMBER_OF_FLOORS; currentFloor++){
@@ -162,24 +174,32 @@ void handler_floorSensors(struct State* currentState){
             }
 
             //Checking if the elevator should take a halt at the current floor
-            if(check_halt(currentState)){
-                routine_arrival(currentState);
+
+            switch (check_halt(currentState)){
+            case (1):
+                arrivalRoutine(currentState, currentFloor);
                 currentState->timer_startTime = clock();
-            }
-            else{
-                orders_checkPeripheralOrders(currentState, currentFloor);
-            }                
-            hardware_commandFloorIndicatorOn(currentFloor);
+                break;
+            case (0):
+                checkPeripherals(currentState, currentFloor);
+                break;
+            }             
+            hardware_command_floor_indicator_on(currentFloor);
+
         }
     }
 }
+
 void handler_keepDoorOpen(struct State* currentState){
-    if( (hardware_readStopSignal() | hardware_readObstructionSignal()) & (currentState->fsm_door)){
-        hardware_commandDoorOpen(1);
+
+    if( (hardware_read_stop_signal() | hardware_read_obstruction_signal()) & currentState->fsm_door){
+        hardware_command_door_open(1);
+
         currentState->fsm_door = 1;
         currentState->timer_startTime = clock();
     }
 }
+
 void initialize_clearAllOrderLights(){
     HardwareOrder order_types[3] = {
         HARDWARE_ORDER_UP,
@@ -188,14 +208,15 @@ void initialize_clearAllOrderLights(){
     };
 
     for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-        
         for(int i = 0; i < 3; i++){
             HardwareOrder type = order_types[i];
             hardware_commandOrderLight(f, type, 0);
         }
     }
 }
-void initialize_state(struct State* currentState, int waitingtime){
+
+void initialize_State(struct State* currentState){
+
     currentState->fsm_floor = HARDWARE_NUMBER_OF_FLOORS;
     currentState->fsm_door = 0;
     currentState->fsm_direction = DIRECTION_DOWN;
@@ -204,29 +225,31 @@ void initialize_state(struct State* currentState, int waitingtime){
     currentState->fsm_resetElevator = 0;
     currentState->fsm_stop = 0;
     currentState->timer_startTime = 0;
-    currentState->timer_waitingTime = 3;
+    currentState->timer_waitingTime = HARDWARE_WAITINGTIME;
 }
-void initialize_hardware(){
+
+
+void initialize_Hardware(){
+
     int error = hardware_init();
-    if(error != 0){
+    if(error){
         fprintf(stderr, "Unable to initialize hardware\n");
         exit(1);
     }
 }
 
-
 int check_halt(struct State* currentState){
     int halt = 0;
-    if ((currentState->fsm_direction == DIRECTION_DOWN) & currentState->fsm_orders[currentState->fsm_floor][0] ){
+    if ( (currentState->fsm_direction == DIRECTION_DOWN) & currentState->fsm_orders[currentState->fsm_floor][0] ){
         halt = 1;
     }
-    else if((currentState->fsm_direction == DIRECTION_UP) & currentState->fsm_orders[currentState->fsm_floor][1] ){
+    else if( (currentState->fsm_direction == DIRECTION_UP) & currentState->fsm_orders[currentState->fsm_floor][1] ){
         halt = 1;
     }
     else if( currentState->fsm_orders[currentState->fsm_floor][2] ){
         halt = 1;
     }
-    else if(currentState->fsm_door & ( currentState->fsm_orders[currentState->fsm_floor][0] | currentState->fsm_orders[currentState->fsm_floor][1] )){
+    else if( currentState->fsm_door & ( currentState->fsm_orders[currentState->fsm_floor][0] | currentState->fsm_orders[currentState->fsm_floor][1]) ){
         halt = 1;
     }
     return halt;

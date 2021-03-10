@@ -6,7 +6,7 @@ int main(){
     struct State fsm;
 
     orders_reset(&fsm);
-    initialize_State (&fsm, 3);
+    initialize_State (&fsm);
     initialize_Hardware();
     
     while(1){

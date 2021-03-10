@@ -51,6 +51,9 @@ void orders_reset(struct State* currentState);
  */
 void orders_update(struct State* currentState);
 
+void orders_checkPeripheral(struct State* currentState, int floor );//consider namechange
+
+
 /**
  * @brief Checks for additional orders in the direction of the @p currentState .
  * If there is no more orders in the perpheral and the door is closed, the
@@ -74,8 +77,9 @@ void routine_startMotor(struct State* currentState);
 void routine_stop(struct State* currentState);
 void routine_arrival(struct State* currentState);
 
-void initialize_State(struct State* currentState, int waitingtime);
-void initialize_hardware();
+void initialize_State(struct State* currentState);
+void initialize_Hardware();
+
 void initialize_clearAllOrderLights();
 
 void handler_closeDoor(struct State* currentState);
