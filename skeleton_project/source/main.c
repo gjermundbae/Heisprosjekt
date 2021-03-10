@@ -15,7 +15,7 @@ int main(){
             fsm.fsm_resetElevator=1;
         }
         
-        while(hardware_read_stop_signal() & fsm.fsm_resetElevator){
+        while(hardware_readStopSignal() & fsm.fsm_resetElevator){
             stopRoutine(&fsm);
         }
 

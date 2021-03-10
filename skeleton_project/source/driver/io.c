@@ -4,10 +4,8 @@
 //
 // 2006, Martin Korsgaard
 
-
 #include "io.h"
 #include "channels.h"
-
 #include <comedilib.h>
 
 
@@ -36,25 +34,25 @@ int io_init() {
 
 
 
-void io_set_bit(int channel) {
+void io_setBit(int channel) {
     comedi_dio_write(it_g, channel >> 8, channel & 0xff, 1);
 }
 
 
 
-void io_clear_bit(int channel) {
+void io_clearBit(int channel) {
     comedi_dio_write(it_g, channel >> 8, channel & 0xff, 0);
 }
 
 
 
-void io_write_analog(int channel, int value) {
+void io_writeAnalog(int channel, int value) {
     comedi_data_write(it_g, channel >> 8, channel & 0xff, 0, AREF_GROUND, value);
 }
 
 
 
-int io_read_bit(int channel) {
+int io_readBit(int channel) {
     unsigned int data = 0;
     comedi_dio_read(it_g, channel >> 8, channel & 0xff, &data);
 
@@ -63,7 +61,7 @@ int io_read_bit(int channel) {
 
 
 
-int io_read_analog(int channel) {
+int io_readAnalog(int channel) {
     lsampl_t data = 0;
     comedi_data_read(it_g, channel >> 8, channel & 0xff, 0, AREF_GROUND, &data);
 
