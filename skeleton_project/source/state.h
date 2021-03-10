@@ -1,7 +1,7 @@
-/*
-@file
-*/
-
+/**
+ * @file
+ * @brief Driver for the elevator hardware.
+ */
 #include <time.h>
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
