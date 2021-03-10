@@ -6,6 +6,7 @@
 #define HARDWARE_H
 #define HARDWARE_NUMBER_OF_FLOORS 4
 #define HARDWARE_NUMBER_OF_BUTTONS 3
+#define HARDWARE_WAITINGTIME 3 //3 seconds
 
 /*Her var vi */
 /* Her var Gjermund*/

@@ -12,13 +12,13 @@ int orders_scanDown(int floor,  struct State* currentState);
 int orders_isEmpty(struct State* currentState);
 void orders_reset(struct State* currentState);
 void orders_update(struct State* currentState);
-void orders_checkPeripheralOrders(struct State* currentState, int floor );//consider namechange
+void orders_checkPeripheral(struct State* currentState, int floor );//consider namechange
 
 void routine_startMotor(struct State* currentState);
 void routine_stop(struct State* currentState);
 void routine_arrival(struct State* currentState, int currentFloor);
 
-void initialize_State(struct State* currentState, int waitingtime);
+void initialize_State(struct State* currentState);
 void initialize_Hardware();
 void initialize_clearAllOrderLights();
 
