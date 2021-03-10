@@ -71,14 +71,14 @@ int hardware_init() {
 
 
 
-void hardware_command_movement(HardwareMovement movement) {
+void hardware_commandMovement(HardwareMovement movement) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {1, hardware_movement_to_legacy(movement)}, 4, 0);
     pthread_mutex_unlock(&sockmtx);
 }
 
 
-void hardware_command_order_light(int floor, HardwareOrder order_type, int on) {
+void hardware_commandOrderLight(int floor, HardwareOrder order_type, int on) {
     assert(floor >= 0);
     assert(floor < HARDWARE_NUMBER_OF_FLOORS);
     assert(order_type >= 0);
@@ -90,7 +90,7 @@ void hardware_command_order_light(int floor, HardwareOrder order_type, int on) {
 }
 
 
-void hardware_command_floor_indicator_on(int floor) {
+void hardware_commandFloorIndicatorOn(int floor) {
     assert(floor >= 0);
     assert(floor < HARDWARE_NUMBER_OF_FLOORS);
 
@@ -100,14 +100,14 @@ void hardware_command_floor_indicator_on(int floor) {
 }
 
 
-void hardware_command_door_open(int door_open) {
+void hardware_commandDoorOpen(int door_open) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {4, door_open}, 4, 0);
     pthread_mutex_unlock(&sockmtx);
 }
 
 
-void hardware_command_stop_light(int on) {
+void hardware_commandStopLight(int on) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {5, on}, 4, 0);
     pthread_mutex_unlock(&sockmtx);
@@ -115,7 +115,7 @@ void hardware_command_stop_light(int on) {
 
 
 
-int hardware_read_order(int floor, HardwareOrder order_type) {
+int hardware_readOrder(int floor, HardwareOrder order_type) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {6, hardware_order_to_legacy(order_type), floor}, 4, 0);
     char buf[4];
@@ -125,7 +125,7 @@ int hardware_read_order(int floor, HardwareOrder order_type) {
 }
 
 
-int hardware_read_floor_sensor(int floor) {
+int hardware_readFloorSensor(int floor) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {7}, 4, 0);
     char buf[4];
@@ -135,7 +135,7 @@ int hardware_read_floor_sensor(int floor) {
 }
 
 
-int hardware_read_stop_signal(void) {
+int hardware_readStopSignal(void) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {8}, 4, 0);
     char buf[4];
@@ -145,7 +145,7 @@ int hardware_read_stop_signal(void) {
 }
 
 
-int hardware_read_obstruction_signal(void) {
+int hardware_readObstructionSignal(void) {
     pthread_mutex_lock(&sockmtx);
     send(sockfd, (char[4]) {9}, 4, 0);
     char buf[4];

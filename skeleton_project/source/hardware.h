@@ -6,11 +6,12 @@
 #define HARDWARE_H
 #define HARDWARE_NUMBER_OF_FLOORS 4
 #define HARDWARE_NUMBER_OF_BUTTONS 3
+#define HARDWARE_WAITINGTIME 3 //3 seconds
 
 /*Her var vi */
 /* Her var Gjermund*/
 /**
- * @brief Movement type used in @c hardware_command_movement.
+ * @brief Movement type used in @c hardware_commandMovement.
  */
 
 
@@ -21,8 +22,8 @@ typedef enum {
 } HardwareMovement;
 
 /**
- * @brief Order type used in @c hardware_read_order
- * and in @c hardware_command_order_light.
+ * @brief Order type used in @c hardware_readOrder
+ * and in @c hardware_commandOrderLight.
  */
 typedef enum {
     HARDWARE_ORDER_UP,
@@ -45,21 +46,21 @@ int hardware_init();
  *
  * @param movement Commanded movement.
  */
-void hardware_command_movement(HardwareMovement movement);
+void hardware_commandMovement(HardwareMovement movement);
 
 /**
  * @brief Polls the hardware for the current stop signal.
  *
  * @return 1 if the stop signal is high; 0 if it is low.
  */
-int hardware_read_stop_signal();
+int hardware_readStopSignal();
 
 /**
  * @brief Polls the hardware for the current obstruction signal.
  *
  * @return 1 if the obstruction signal is high; 0 if it is low.
  */
-int hardware_read_obstruction_signal();
+int hardware_readObstructionSignal();
 
 /**
  * @brief Polls the floor sensor for the given @p floor.
@@ -68,7 +69,7 @@ int hardware_read_obstruction_signal();
  *
  * @return 1 if the elevator is at @p floor, otherwise 0;
  */
-int hardware_read_floor_sensor(int floor);
+int hardware_readFloorSensor(int floor);
 
 /**
  * @brief Polls the hardware for the status of orders from
@@ -80,7 +81,7 @@ int hardware_read_floor_sensor(int floor);
  * @return 1 if the combination of @p floor and @p order_type
  * is being requested, otherwise 0.
  */
-int hardware_read_order(int floor, HardwareOrder order_type);
+int hardware_readOrder(int floor, HardwareOrder order_type);
 
 /**
  * @brief Commands the hardware to open- or close the elevator door.
@@ -88,7 +89,7 @@ int hardware_read_order(int floor, HardwareOrder order_type);
  * @param door_open A truthy value (non-zero) to open the door;
  * 0 to close.
  */
-void hardware_command_door_open(int door_open);
+void hardware_commandDoorOpen(int door_open);
 
 /**
  * @brief Commands the hardware to turn on the floor indicator
@@ -100,7 +101,7 @@ void hardware_command_door_open(int door_open);
  * @warning Owing to peculiarities in the hardware construction,
  * there will always be one indicator active.
  */
-void hardware_command_floor_indicator_on(int floor);
+void hardware_commandFloorIndicatorOn(int floor);
 
 /**
  * @brief Sets the light in the panel stop button.
@@ -108,7 +109,7 @@ void hardware_command_floor_indicator_on(int floor);
  * @param on A truthy value (non-zero) to turn the light on;
  * 0 to turn it off.
  */
-void hardware_command_stop_light(int on);
+void hardware_commandStopLight(int on);
 
 
 /**
@@ -120,6 +121,6 @@ void hardware_command_stop_light(int on);
  * @param on A truthy value (non-zero) to turn the light on;
  * 0 to turn it off.
  */
-void hardware_command_order_light(int floor, HardwareOrder order_type, int on);
+void hardware_commandOrderLight(int floor, HardwareOrder order_type, int on);
 
 #endif

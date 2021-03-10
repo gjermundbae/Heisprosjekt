@@ -27,7 +27,7 @@ int io_init();
   Sets a digital channel bit.
   @param channel Channel bit to set.
 */
-void io_set_bit(int channel);
+void io_setBit(int channel);
 
 
 
@@ -35,7 +35,7 @@ void io_set_bit(int channel);
   Clears a digital channel bit.
   @param channel Channel bit to set.
 */
-void io_clear_bit(int channel);
+void io_clearBit(int channel);
 
 
 
@@ -44,7 +44,7 @@ void io_clear_bit(int channel);
   @param channel Channel to write to.
   @param value Value to write.
 */
-void io_write_analog(int channel, int value);
+void io_writeAnalog(int channel, int value);
 
 
 
@@ -53,7 +53,7 @@ void io_write_analog(int channel, int value);
   @param channel Channel to read from.
   @return Value read.
 */
-int io_read_bit(int channel);
+int io_readBit(int channel);
 
 
 
@@ -63,7 +63,7 @@ int io_read_bit(int channel);
   @param channel Channel to read from.
   @return Value read.
 */
-int io_read_analog(int channel);
+int io_readAnalog(int channel);
 
 #endif // #ifndef __INCLUDE_IO_H__
 
