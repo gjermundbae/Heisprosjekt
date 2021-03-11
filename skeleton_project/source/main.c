@@ -1,4 +1,3 @@
-
 #include "hardware.h"
 #include "utilities.h"
 //hei
@@ -12,10 +11,10 @@ int main(){
     while(1){
         
         if(fsm.fsm_floor == 0){
-            fsm.fsm_resetElevator=1;
+            fsm.fsm_ignoreAllOrdes = 0;
         }
         
-        while(hardware_readStopSignal() & fsm.fsm_resetElevator){
+        while(hardware_readStopSignal() & !fsm.fsm_ignoreAllOrdes){
             routine_stop(&fsm);
         }
 
