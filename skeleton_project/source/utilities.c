@@ -181,6 +181,7 @@ void handler_floorSensors(struct State* currentState){
                 routine_arrival(currentState);
                 currentState->timer_startTime = clock();
                 break;
+                //The elevator should also take a halt if there is no peripheral orders
             case (0):
                 orders_checkPeripherals(currentState);
                 break;
