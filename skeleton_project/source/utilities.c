@@ -40,7 +40,7 @@ void orders_reset(struct State* currentState){
 
 void orders_update(struct State* currentState){
     for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-        if(currentState->fsm_resetElevator){
+        if(!(currentState->fsm_ignoreAllOrdes)){
             /* Internal orders */
             if(hardware_readOrder(f, HARDWARE_ORDER_INSIDE)){
                 hardware_commandOrderLight(f, HARDWARE_ORDER_INSIDE, 1);
@@ -223,7 +223,7 @@ void initialize_state(struct State* currentState){
     currentState->fsm_direction = DIRECTION_DOWN;
     orders_reset(currentState);
     currentState->fsm_orders[0][2] = 1;
-    currentState->fsm_resetElevator = 0;
+    currentState->fsm_ignoreAllOrdes = 1;
     currentState->fsm_stop = 0;
     currentState->timer_startTime = 0;
     currentState->timer_waitingTime = HARDWARE_WAITINGTIME;
