@@ -19,13 +19,13 @@
  * @var fsm_direction is the current direction of the elevator;
  * 1 when it is going down and 0 when going up
  * 
- * @var fsm_orders is our orderbook; a matix that keeps track of the orders, 
- * so a 1-element indicates an unattended order, and a 0 mens no orders.
+ * @var fsm_orders is the orderbook; a matrix that keeps track of the orders, 
+ * so a 1-element indicates an unattended order, and a 0 means no orders.
  * The fist column indicates the down-order buttons outside the elevator, 
  * the second column the up-order buttons outside the elevator and 
  * the third coulumn is the order buttons inside the elevator.
- * Further indicates the fist row the fourth floor, 
- * and so on to the fourth row, that indicates the first floor. 
+ * Further indicates the fist row the first floor, 
+ * and so on to the last row, which indicates the top floor. 
  * 
  * @var fsm_ignoreAllOrdes is 1 when we want to ignore all orders ie from when the elevator 
  * first start to when it first comes to the fisrt floor. 0 when we want to recieve orders.

@@ -11,7 +11,7 @@
 #include "state.h"
 
 /**
- * @brief Searches through all orders above the last floor visited in the @p currentState
+ * @brief Searches through all orders above the last floor visited
  *
  * @param currentState current state of the elevator
  *
@@ -20,8 +20,8 @@
 int orders_scanUp(struct State* currentState);
 
 /**
- * @brief Searches through all orders under the last floor visited in the @p currentState
- *
+ * @brief Searches through all orders under the last floor visited
+ * 
  * @param currentState current state of the elevator
  *
  * @return true if there exists an order under the current floor
@@ -29,7 +29,7 @@ int orders_scanUp(struct State* currentState);
 int orders_scanDown(struct State* currentState);
 
 /**
- * @brief Searches through the current orderbook in the @p currentState
+ * @brief Searches through the current orderbook of the @p currentState
  *
  * @param currentState current state of the elevator
  *
@@ -75,8 +75,11 @@ void routine_startMotor(struct State* currentState);
 
 /**
  * @brief Excecutes the routine associated with the stop-button being pressed.
- * This involves a reset of the orderbook and all order lights, fsm_stop of the @p currentState
- * being set to 1, halting the elevator and opening the doors if the elevator is at a defined floor
+ * This involves:
+ *  Resetting the orderbook and all order lights
+ *  Setting fsm_stop of the @p currentState to 1
+ *  Halting the elevator
+ *  Opening the doors if the elevator is at a defined floor
  *
  * @param currentState current state of the elevator
  */
@@ -84,8 +87,10 @@ void routine_stop(struct State* currentState);
 
 /**
  * @brief Excecutes the routine associated with the elevator halting at a floor.
- * This involves halting the elevator, opening the door and resetting
- * all orders and order lights from the current floor
+ * This involves:
+ * Halting the elevator
+ * Opening the door
+ * Resetting the orders and order lights on the current floor
  *
  * @param currentState current state of the elevator
  */
@@ -93,8 +98,9 @@ void routine_arrival(struct State* currentState);
 
 /**
  * @brief Sets all values of @p currentState to the preferred initial values.
- * This involves an empty orderbook and the fsm_resetElevator parameter is set to 0, 
- * which will send the elevator to the first floor
+ * This involves:
+ * Resetting the orderbook
+ * Resetting the fsm_resetElevator of the @p currentState , which will send the elevator to the first floor
  *
  * @param currentState current state of the elevator
  */
@@ -115,7 +121,7 @@ void initialize_clearAllOrderLights();
 
 /**
  * @brief Closes the doors and turns off the door-light if doors have been open 
- * for more than the parameter timer_waitingTime of the @p currentState
+ * for more than the timer_waitingTime of the @p currentState
  *
  * @param currentState current state of the elevator
  */
@@ -134,22 +140,23 @@ void handler_keepDoorOpen(struct State* currentState);//Consider namechange
  * This requires extra logic because the elevator might be between floors
  * @param currentState current state of the elevator
  * 
- * @warning The fsm_floor parameter of @p currentState might be manipulated
+ * @warning The fsm_floor of the @p currentState might be manipulated
  * in order to prevent bugs in the system
  */
 void handler_firstOrderAfterStop(struct State* currentState);
 
 /**
  * @brief If there is an active floor sensor, the function check_halt is called to decide whether or not to 
- * take a halt. If so, the halt is excecuted.
- * The floor light of the active floor will be set
+ * take a halt. If so, the halt is excecuted and
+ * the floor light of the active floor will be set
  *
  * @param currentState current state of the elevator
  */
 void handler_floorSensors(struct State* currentState);//Consider namechange
 
 /**
- * @brief Compares the current floor, the current direction and the orderbook of the @p currentState 
+ * @brief Compares the current floor, the current direction and the orderbook of the @p currentState
+ * to decide whether or not the elevator should take a halt
  *
  * @param currentState current state of the elevator
  * 
