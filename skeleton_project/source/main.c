@@ -1,6 +1,6 @@
 #include "hardware.h"
 #include "utilities.h"
-//hei
+
 int main(){
     struct State fsm;
 
@@ -10,6 +10,7 @@ int main(){
     
     while(1){
         
+        //The elevator does not accept orders until it has arrived at the first floor for the first time
         if(fsm.fsm_floor == 0){
             fsm.fsm_ignoreAllOrdes = 0;
         }
@@ -18,11 +19,14 @@ int main(){
             routine_stop(&fsm);
         }
 
-        //Turns off the stoplight after stopbutton is released
-        hardware_commandStopLight(0);
-        
-        //The first order after stopbutton requires extra direction-logic
+        // Turns off the stoplight after stopbutton is released
+        if (fsm.fsm_stop){
+            hardware_commandStopLight(0);
+        }
+
+        // The first order after stopbutton requires extra direction-logic
         handler_firstOrderAfterStop(&fsm);
+
 
         //Checks for new orders and updates the orderbook
         orders_update(&fsm);
@@ -38,7 +42,8 @@ int main(){
 
         //Closes the door if the timer is up
         handler_closeDoor(&fsm);
-
+        
     }
+
     return 0;
 }

@@ -1,0 +1,389 @@
+\hypertarget{utilities_8h}{}\section{source/utilities.h File Reference}
+\label{utilities_8h}\index{source/utilities.\+h@{source/utilities.\+h}}
+
+
+Utility-\/functions that is used to make decisions regarding the initialization and handling of the fsm, as well as the high level logic of the hardware.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$signal.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}hardware.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}state.\+h\char`\"{}}\newline
+Include dependency graph for utilities.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utilities_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=264pt]{utilities_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{utilities_8h_ad23a19d30fe8a79d4d57ef7cf1b27606}{orders\+\_\+scan\+Up} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Searches through all orders above the last floor visited. \end{DoxyCompactList}\item 
+int \hyperlink{utilities_8h_a1e5ed8d6b7162e8a6108c26bb95f90c3}{orders\+\_\+scan\+Down} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Searches through all orders under the last floor visited. \end{DoxyCompactList}\item 
+int \hyperlink{utilities_8h_a2d994e25f4eb46c506ea09ab19903091}{orders\+\_\+is\+Empty} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Searches for true elements in the orderbook of the {\ttfamily current\+State}. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_aa24ca3fc02bc1ae9fa9fdcbd3676643b}{orders\+\_\+reset} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Resets all elements in the orderbook of the {\ttfamily current\+State}. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_afed71a3659d78a493d5a26711c8f2c90}{orders\+\_\+update} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Checks if any of the order buttons is pressed and sets the corresponding element in the orderbook of the {\ttfamily current\+State} to 1. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_aa61b141d1f8439848f30338ea8020420}{orders\+\_\+check\+Peripherals} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Checks for additional orders in the direction of the {\ttfamily current\+State} . If there is no more orders in the peripheral and the door is closed, the direction of the {\ttfamily current\+State} is flipped. If there is an active order in the current floor heading in the new direction, the routine\+\_\+arrival function is called. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_ab40428b043fc935b46473809a2713526}{routine\+\_\+start\+Motor} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Starts the motor in the direction of the {\ttfamily current\+State} provided that the door is closed and that there exists an order. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_aa99be307bbfe1745a10b5f93b549d604}{routine\+\_\+stop} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Excecutes the routine associated with the stop-\/button being pressed. This involves\+: Resetting the orderbook and all order lights Setting fsm\+\_\+stop of the {\ttfamily current\+State} to 1 Halting the elevator Opening the doors if the elevator is at a defined floor. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_ac1169440a22b18c47a59eb919b6b5793}{routine\+\_\+arrival} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Excecutes the routine associated with the elevator halting at a floor. This involves\+: Halting the elevator Opening the door Resetting the orders and order lights on the current floor. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_afa402716aa64282819669dbfe0df67c2}{initialize\+\_\+hardware} ()
+\begin{DoxyCompactList}\small\item\em Resets all lights realated to the elevator and initializes the input/output ports. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_a3e2cbb6422ab3aba897afa93806356f4}{initialize\+\_\+state} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Sets all values of {\ttfamily current\+State} to the preferred initial values. This involves\+: Setting fsm\+\_\+floor to the top floor Setting the fsm\+\_\+ignore\+All\+Orders of the {\ttfamily current\+State} and setting an order in the first floor, which will send the elevator to the first floor Resetting fsm\+\_\+stop, fsm\+\_\+door and timer\+\_\+start\+Time Setting fsm\+\_\+direction to down. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utilities_8h_aa6aac2968b7f6a8c55b257c9c4371b9e}\label{utilities_8h_aa6aac2968b7f6a8c55b257c9c4371b9e}} 
+void \hyperlink{utilities_8h_aa6aac2968b7f6a8c55b257c9c4371b9e}{initialize\+\_\+clear\+All\+Order\+Lights} ()
+\begin{DoxyCompactList}\small\item\em Resets all lights related to the elevator. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_ae51781081a78a682f050b705cad4e23a}{handler\+\_\+close\+Door} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Closes the doors and turns off the door-\/light if the doors have been open for more than the timer\+\_\+waiting\+Time of the {\ttfamily current\+State}. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_a5ee8a7ab22d1b1e8611ebb6981a278f3}{handler\+\_\+keep\+Door\+Open} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Restarts the door-\/timer of the {\ttfamily current\+State} if the obstruction signal or stop button is active while the doors are open. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_a54fab6fc7214ab25199b43f69ea0b479}{handler\+\_\+first\+Order\+After\+Stop} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Handles the special case when the first order after a stop-\/state is recieved This requires extra logic because the elevator might be between floors. \end{DoxyCompactList}\item 
+void \hyperlink{utilities_8h_a270694feded09657dfd08d9199c433d5}{handler\+\_\+floor\+Sensors} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em If there is an active floor sensor, the function check\+\_\+halt is called to decide whether or not to take a halt. If so, the halt is excecuted. The floor light of the active floor will be set. \end{DoxyCompactList}\item 
+int \hyperlink{utilities_8h_a9d5d7d239279fcd60789ef49b1f02e48}{check\+\_\+halt} (struct \hyperlink{structState}{State} $\ast$current\+State)
+\begin{DoxyCompactList}\small\item\em Compares the current floor, the current direction and the orderbook of the {\ttfamily current\+State} to decide whether or not the elevator should take a halt. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility-\/functions that is used to make decisions regarding the initialization and handling of the fsm, as well as the high level logic of the hardware. 
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{utilities_8h_a9d5d7d239279fcd60789ef49b1f02e48}\label{utilities_8h_a9d5d7d239279fcd60789ef49b1f02e48}} 
+\index{utilities.\+h@{utilities.\+h}!check\+\_\+halt@{check\+\_\+halt}}
+\index{check\+\_\+halt@{check\+\_\+halt}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{check\+\_\+halt()}{check\_halt()}}
+{\footnotesize\ttfamily int check\+\_\+halt (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Compares the current floor, the current direction and the orderbook of the {\ttfamily current\+State} to decide whether or not the elevator should take a halt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the elevator should take a halt, false if not 
+\end{DoxyReturn}
+
+
+Definition at line 243 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_ae51781081a78a682f050b705cad4e23a}\label{utilities_8h_ae51781081a78a682f050b705cad4e23a}} 
+\index{utilities.\+h@{utilities.\+h}!handler\+\_\+close\+Door@{handler\+\_\+close\+Door}}
+\index{handler\+\_\+close\+Door@{handler\+\_\+close\+Door}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{handler\+\_\+close\+Door()}{handler\_closeDoor()}}
+{\footnotesize\ttfamily void handler\+\_\+close\+Door (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Closes the doors and turns off the door-\/light if the doors have been open for more than the timer\+\_\+waiting\+Time of the {\ttfamily current\+State}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 132 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a54fab6fc7214ab25199b43f69ea0b479}\label{utilities_8h_a54fab6fc7214ab25199b43f69ea0b479}} 
+\index{utilities.\+h@{utilities.\+h}!handler\+\_\+first\+Order\+After\+Stop@{handler\+\_\+first\+Order\+After\+Stop}}
+\index{handler\+\_\+first\+Order\+After\+Stop@{handler\+\_\+first\+Order\+After\+Stop}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{handler\+\_\+first\+Order\+After\+Stop()}{handler\_firstOrderAfterStop()}}
+{\footnotesize\ttfamily void handler\+\_\+first\+Order\+After\+Stop (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Handles the special case when the first order after a stop-\/state is recieved This requires extra logic because the elevator might be between floors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+The fsm\+\_\+floor of the {\ttfamily current\+State} might be manipulated in order to prevent bugs in the system 
+\end{DoxyWarning}
+
+
+Definition at line 140 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a270694feded09657dfd08d9199c433d5}\label{utilities_8h_a270694feded09657dfd08d9199c433d5}} 
+\index{utilities.\+h@{utilities.\+h}!handler\+\_\+floor\+Sensors@{handler\+\_\+floor\+Sensors}}
+\index{handler\+\_\+floor\+Sensors@{handler\+\_\+floor\+Sensors}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{handler\+\_\+floor\+Sensors()}{handler\_floorSensors()}}
+{\footnotesize\ttfamily void handler\+\_\+floor\+Sensors (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+If there is an active floor sensor, the function check\+\_\+halt is called to decide whether or not to take a halt. If so, the halt is excecuted. The floor light of the active floor will be set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 162 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a5ee8a7ab22d1b1e8611ebb6981a278f3}\label{utilities_8h_a5ee8a7ab22d1b1e8611ebb6981a278f3}} 
+\index{utilities.\+h@{utilities.\+h}!handler\+\_\+keep\+Door\+Open@{handler\+\_\+keep\+Door\+Open}}
+\index{handler\+\_\+keep\+Door\+Open@{handler\+\_\+keep\+Door\+Open}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{handler\+\_\+keep\+Door\+Open()}{handler\_keepDoorOpen()}}
+{\footnotesize\ttfamily void handler\+\_\+keep\+Door\+Open (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Restarts the door-\/timer of the {\ttfamily current\+State} if the obstruction signal or stop button is active while the doors are open. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 195 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_afa402716aa64282819669dbfe0df67c2}\label{utilities_8h_afa402716aa64282819669dbfe0df67c2}} 
+\index{utilities.\+h@{utilities.\+h}!initialize\+\_\+hardware@{initialize\+\_\+hardware}}
+\index{initialize\+\_\+hardware@{initialize\+\_\+hardware}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{initialize\+\_\+hardware()}{initialize\_hardware()}}
+{\footnotesize\ttfamily void initialize\+\_\+hardware (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Resets all lights realated to the elevator and initializes the input/output ports. 
+
+\begin{DoxyWarning}{Warning}
+Will exit if the initialization of the input/ouput ports fails 
+\end{DoxyWarning}
+
+
+Definition at line 234 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a3e2cbb6422ab3aba897afa93806356f4}\label{utilities_8h_a3e2cbb6422ab3aba897afa93806356f4}} 
+\index{utilities.\+h@{utilities.\+h}!initialize\+\_\+state@{initialize\+\_\+state}}
+\index{initialize\+\_\+state@{initialize\+\_\+state}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{initialize\+\_\+state()}{initialize\_state()}}
+{\footnotesize\ttfamily void initialize\+\_\+state (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Sets all values of {\ttfamily current\+State} to the preferred initial values. This involves\+: Setting fsm\+\_\+floor to the top floor Setting the fsm\+\_\+ignore\+All\+Orders of the {\ttfamily current\+State} and setting an order in the first floor, which will send the elevator to the first floor Resetting fsm\+\_\+stop, fsm\+\_\+door and timer\+\_\+start\+Time Setting fsm\+\_\+direction to down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 220 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_aa61b141d1f8439848f30338ea8020420}\label{utilities_8h_aa61b141d1f8439848f30338ea8020420}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+check\+Peripherals@{orders\+\_\+check\+Peripherals}}
+\index{orders\+\_\+check\+Peripherals@{orders\+\_\+check\+Peripherals}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+check\+Peripherals()}{orders\_checkPeripherals()}}
+{\footnotesize\ttfamily void orders\+\_\+check\+Peripherals (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Checks for additional orders in the direction of the {\ttfamily current\+State} . If there is no more orders in the peripheral and the door is closed, the direction of the {\ttfamily current\+State} is flipped. If there is an active order in the current floor heading in the new direction, the routine\+\_\+arrival function is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 64 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a2d994e25f4eb46c506ea09ab19903091}\label{utilities_8h_a2d994e25f4eb46c506ea09ab19903091}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+is\+Empty@{orders\+\_\+is\+Empty}}
+\index{orders\+\_\+is\+Empty@{orders\+\_\+is\+Empty}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+is\+Empty()}{orders\_isEmpty()}}
+{\footnotesize\ttfamily int orders\+\_\+is\+Empty (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Searches for true elements in the orderbook of the {\ttfamily current\+State}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the orderbook is empty 
+\end{DoxyReturn}
+
+
+Definition at line 23 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_aa24ca3fc02bc1ae9fa9fdcbd3676643b}\label{utilities_8h_aa24ca3fc02bc1ae9fa9fdcbd3676643b}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+reset@{orders\+\_\+reset}}
+\index{orders\+\_\+reset@{orders\+\_\+reset}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+reset()}{orders\_reset()}}
+{\footnotesize\ttfamily void orders\+\_\+reset (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Resets all elements in the orderbook of the {\ttfamily current\+State}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 31 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_a1e5ed8d6b7162e8a6108c26bb95f90c3}\label{utilities_8h_a1e5ed8d6b7162e8a6108c26bb95f90c3}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+scan\+Down@{orders\+\_\+scan\+Down}}
+\index{orders\+\_\+scan\+Down@{orders\+\_\+scan\+Down}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+scan\+Down()}{orders\_scanDown()}}
+{\footnotesize\ttfamily int orders\+\_\+scan\+Down (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Searches through all orders under the last floor visited. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if there exists an order under the current floor 
+\end{DoxyReturn}
+
+
+Definition at line 14 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_ad23a19d30fe8a79d4d57ef7cf1b27606}\label{utilities_8h_ad23a19d30fe8a79d4d57ef7cf1b27606}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+scan\+Up@{orders\+\_\+scan\+Up}}
+\index{orders\+\_\+scan\+Up@{orders\+\_\+scan\+Up}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+scan\+Up()}{orders\_scanUp()}}
+{\footnotesize\ttfamily int orders\+\_\+scan\+Up (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Searches through all orders above the last floor visited. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if there exists an order above the current floor 
+\end{DoxyReturn}
+
+
+Definition at line 4 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_afed71a3659d78a493d5a26711c8f2c90}\label{utilities_8h_afed71a3659d78a493d5a26711c8f2c90}} 
+\index{utilities.\+h@{utilities.\+h}!orders\+\_\+update@{orders\+\_\+update}}
+\index{orders\+\_\+update@{orders\+\_\+update}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{orders\+\_\+update()}{orders\_update()}}
+{\footnotesize\ttfamily void orders\+\_\+update (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Checks if any of the order buttons is pressed and sets the corresponding element in the orderbook of the {\ttfamily current\+State} to 1. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 41 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_ac1169440a22b18c47a59eb919b6b5793}\label{utilities_8h_ac1169440a22b18c47a59eb919b6b5793}} 
+\index{utilities.\+h@{utilities.\+h}!routine\+\_\+arrival@{routine\+\_\+arrival}}
+\index{routine\+\_\+arrival@{routine\+\_\+arrival}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{routine\+\_\+arrival()}{routine\_arrival()}}
+{\footnotesize\ttfamily void routine\+\_\+arrival (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Excecutes the routine associated with the elevator halting at a floor. This involves\+: Halting the elevator Opening the door Resetting the orders and order lights on the current floor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 106 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_ab40428b043fc935b46473809a2713526}\label{utilities_8h_ab40428b043fc935b46473809a2713526}} 
+\index{utilities.\+h@{utilities.\+h}!routine\+\_\+start\+Motor@{routine\+\_\+start\+Motor}}
+\index{routine\+\_\+start\+Motor@{routine\+\_\+start\+Motor}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{routine\+\_\+start\+Motor()}{routine\_startMotor()}}
+{\footnotesize\ttfamily void routine\+\_\+start\+Motor (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Starts the motor in the direction of the {\ttfamily current\+State} provided that the door is closed and that there exists an order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 121 of file utilities.\+c.
+
+\mbox{\Hypertarget{utilities_8h_aa99be307bbfe1745a10b5f93b549d604}\label{utilities_8h_aa99be307bbfe1745a10b5f93b549d604}} 
+\index{utilities.\+h@{utilities.\+h}!routine\+\_\+stop@{routine\+\_\+stop}}
+\index{routine\+\_\+stop@{routine\+\_\+stop}!utilities.\+h@{utilities.\+h}}
+\subsubsection{\texorpdfstring{routine\+\_\+stop()}{routine\_stop()}}
+{\footnotesize\ttfamily void routine\+\_\+stop (\begin{DoxyParamCaption}\item[{struct \hyperlink{structState}{State} $\ast$}]{current\+State }\end{DoxyParamCaption})}
+
+
+
+Excecutes the routine associated with the stop-\/button being pressed. This involves\+: Resetting the orderbook and all order lights Setting fsm\+\_\+stop of the {\ttfamily current\+State} to 1 Halting the elevator Opening the doors if the elevator is at a defined floor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em current\+State} & pointer to the current state of the elevator \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 90 of file utilities.\+c.
+

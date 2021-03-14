@@ -1,0 +1,7 @@
+<map id="source/hardware.h" name="source/hardware.h">
+<area shape="rect" id="node2" href="$main_8c_source.html" title="source/main.c" alt="" coords="5,169,109,196"/>
+<area shape="rect" id="node3" href="$utilities_8h.html" title="Utility&#45;functions that is used to make decisions regarding the initialization and handling of the fsm..." alt="" coords="95,87,212,114"/>
+<area shape="rect" id="node5" href="$hardware__sal_8c_source.html" title="source/driver/hardware\l_sal.c" alt="" coords="236,80,391,121"/>
+<area shape="rect" id="node6" href="$hardware__sim_8c_source.html" title="source/driver/hardware\l_sim.c" alt="" coords="415,80,569,121"/>
+<area shape="rect" id="node4" href="$utilities_8c_source.html" title="source/utilities.c" alt="" coords="133,169,251,196"/>
+</map>
