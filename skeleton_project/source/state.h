@@ -30,9 +30,9 @@
  * fsm_ignoreAllOrdes When active, the elevator ignores all orders pending the arrival at the first floor 
  * Reset after arrival at the first floor
  * 
- * timer_startTime is the time when the door timer starts
+ * fsm_startTime is the time when the door timer starts
  * 
- * timer_waitingTime is the door waiting-/countdowntime 
+ * fsm_waitingTime is the door waiting-/countdowntime 
  */
 struct State{
     int fsm_floor;
@@ -41,6 +41,6 @@ struct State{
     int fsm_direction;
     int fsm_orders[HARDWARE_NUMBER_OF_FLOORS][HARDWARE_NUMBER_OF_BUTTONS];
     int fsm_ignoreAllOrdes;
-    clock_t timer_startTime;
-    clock_t timer_waitingTime;
+    clock_t fsm_startTime;
+    clock_t fsm_waitingTime;
 };

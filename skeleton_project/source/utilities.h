@@ -108,7 +108,7 @@ void initialize_hardware();
  * This involves:
  * Setting fsm_floor to the top floor
  * Setting the fsm_ignoreAllOrders of the @p currentState and setting an order in the first floor, which will send the elevator to the first floor
- * Resetting fsm_stop, fsm_door and timer_startTime
+ * Resetting fsm_stop, fsm_door and fsm_startTime
  * Setting fsm_direction to down
  *
  * @param currentState pointer to the current state of the elevator
@@ -123,7 +123,7 @@ void initialize_clearAllOrderLights();
 
 /**
  * @brief Closes the doors and turns off the door-light if the doors have been open 
- * for more than the timer_waitingTime of the @p currentState
+ * for more than the fsm_waitingTime of the @p currentState
  *
  * @param currentState pointer to the current state of the elevator
  */
