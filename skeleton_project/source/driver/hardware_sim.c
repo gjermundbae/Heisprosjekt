@@ -10,7 +10,7 @@
 static int sockfd;
 static pthread_mutex_t sockmtx;
 
-int hardware_movement_to_legacy(HardwareMovement hardware_movement)
+int hardware_movementToLegacy(HardwareMovement hardware_movement)
 {
   switch (hardware_movement)
   {
@@ -25,7 +25,7 @@ int hardware_movement_to_legacy(HardwareMovement hardware_movement)
   }
 }
 
-int hardware_order_to_legacy(HardwareOrder hardware_order)
+int hardware_orderToLegacy(HardwareOrder hardware_order)
 {
   switch (hardware_order)
   {
@@ -73,7 +73,7 @@ int hardware_init() {
 
 void hardware_commandMovement(HardwareMovement movement) {
     pthread_mutex_lock(&sockmtx);
-    send(sockfd, (char[4]) {1, hardware_movement_to_legacy(movement)}, 4, 0);
+    send(sockfd, (char[4]) {1, hardware_movementToLegacy(movement)}, 4, 0);
     pthread_mutex_unlock(&sockmtx);
 }
 
@@ -85,7 +85,7 @@ void hardware_commandOrderLight(int floor, HardwareOrder order_type, int on) {
     assert(order_type < HARDWARE_NUMBER_OF_BUTTONS);
 
     pthread_mutex_lock(&sockmtx);
-    send(sockfd, (char[4]) {2, hardware_order_to_legacy(order_type), floor, on}, 4, 0);
+    send(sockfd, (char[4]) {2, hardware_orderToLegacy(order_type), floor, on}, 4, 0);
     pthread_mutex_unlock(&sockmtx);
 }
 
@@ -117,7 +117,7 @@ void hardware_commandStopLight(int on) {
 
 int hardware_readOrder(int floor, HardwareOrder order_type) {
     pthread_mutex_lock(&sockmtx);
-    send(sockfd, (char[4]) {6, hardware_order_to_legacy(order_type), floor}, 4, 0);
+    send(sockfd, (char[4]) {6, hardware_orderToLegacy(order_type), floor}, 4, 0);
     char buf[4];
     recv(sockfd, buf, 4, 0);
     pthread_mutex_unlock(&sockmtx);
