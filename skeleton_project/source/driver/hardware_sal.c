@@ -3,7 +3,7 @@
 #include "io.h"
 #include <stdlib.h>
 
-static int hardware_legal_floor(int floor, HardwareOrder order_type){
+static int hardware_legalFloor(int floor, HardwareOrder order_type){
     int lower_floor = 0;
     int upper_floor = HARDWARE_NUMBER_OF_FLOORS - 1;
 
@@ -22,7 +22,7 @@ static int hardware_legal_floor(int floor, HardwareOrder order_type){
     return 1;
 }
 
-static int hardware_order_type_bit(HardwareOrder order_type){
+static int hardware_orderTypeBit(HardwareOrder order_type){
     int type_bit;
 
     switch(order_type){
@@ -119,7 +119,7 @@ int hardware_readFloorSensor(int floor){
 }
 
 int hardware_readOrder(int floor, HardwareOrder order_type){
-    if(!hardware_legal_floor(floor, order_type)){
+    if(!hardware_legalFloor(floor, order_type)){
         return 0;
     }
 
@@ -130,7 +130,7 @@ int hardware_readOrder(int floor, HardwareOrder order_type){
         {BUTTON_UP4, BUTTON_DOWN4, BUTTON_COMMAND4}
     };
 
-    int type_bit = hardware_order_type_bit(order_type);
+    int type_bit = hardware_orderTypeBit(order_type);
 
     return io_readBit(order_bit_lookup[floor][type_bit]);
 }
@@ -170,7 +170,7 @@ void hardware_commandStopLight(int on){
 }
 
 void hardware_commandOrderLight(int floor, HardwareOrder order_type, int on){
-    if(!hardware_legal_floor(floor, order_type)){
+    if(!hardware_legalFloor(floor, order_type)){
         return;
     }
 
@@ -181,7 +181,7 @@ void hardware_commandOrderLight(int floor, HardwareOrder order_type, int on){
         {LIGHT_UP4, LIGHT_DOWN4, LIGHT_COMMAND4}
     };
 
-    int type_bit = hardware_order_type_bit(order_type);
+    int type_bit = hardware_orderTypeBit(order_type);
 
     if(on){
         io_setBit(light_bit_lookup[floor][type_bit]);

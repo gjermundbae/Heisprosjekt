@@ -110,9 +110,12 @@ void routine_stop(struct State* currentState){
 
     for(int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
         if(hardware_readFloorSensor(f)){
-            hardware_commandDoorOpen(1);
+            routine_arrival(currentState);
+            /*hardware_commandDoorOpen(1);
             currentState->fsm_door = 1;
-            currentState->timer_startTime = clock();
+           
+            currentState->fsm_startTime = clock();
+        */
         }
     }
 }
@@ -125,7 +128,6 @@ void routine_arrival(struct State* currentState){
         hardware_commandOrderLight(currentState->fsm_floor, i, 0);    
     }
     
-
     hardware_commandDoorOpen(1);
     currentState->fsm_door = 1;
 
@@ -133,7 +135,7 @@ void routine_arrival(struct State* currentState){
         currentState->fsm_orders[currentState->fsm_floor][b]=0;
     }
 
-    currentState->timer_startTime = clock();
+    currentState->fsm_startTime = clock();
 
 }
 
@@ -157,11 +159,11 @@ void routine_startMotor(struct State* currentState){
 
 
 void handler_closeDoor(struct State* currentState){
-    int elapsedTime =  (int)(((clock() - currentState->timer_startTime))/ CLOCKS_PER_SEC);
+    int elapsedTime =  (int)(((clock() - currentState->fsm_startTime))/ CLOCKS_PER_SEC);
     
     if(currentState->fsm_door){
     
-        if( elapsedTime >= currentState->timer_waitingTime ){
+        if( elapsedTime >= currentState->fsm_waitingTime ){
                 currentState->fsm_door = 0;
                 hardware_commandDoorOpen(0);
         }
@@ -216,7 +218,6 @@ void handler_floorSensors(struct State* currentState){
             switch (check_halt(currentState)){
             case (1):
                 routine_arrival(currentState);
-                currentState->timer_startTime = clock();
                 break;
 
             //The elevator should also take a halt if there is no peripheral orders
@@ -234,10 +235,7 @@ void handler_floorSensors(struct State* currentState){
 void handler_keepDoorOpen(struct State* currentState){
 
     if( (hardware_readStopSignal() | hardware_readObstructionSignal()) & currentState->fsm_door){
-        hardware_commandDoorOpen(1);
-
-        currentState->fsm_door = 1;
-        currentState->timer_startTime = clock();
+        routine_arrival(currentState);
     }
 }
 
@@ -268,8 +266,8 @@ void initialize_state(struct State* currentState){
     currentState->fsm_orders[0][2] = 1;
     currentState->fsm_ignoreAllOrdes = 1;
     currentState->fsm_stop = 0;
-    currentState->timer_startTime = 0;
-    currentState->timer_waitingTime = HARDWARE_WAITINGTIME;
+    currentState->fsm_startTime = 0;
+    currentState->fsm_waitingTime = HARDWARE_WAITINGTIME;
 }
 
 
